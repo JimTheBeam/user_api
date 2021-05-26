@@ -1,0 +1,4 @@
+task.md
+*.log
+.vscode
+*.sh
