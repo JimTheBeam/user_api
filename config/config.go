@@ -11,16 +11,24 @@ import (
 
 // Config - config struct
 type Config struct {
+
 	// LogLevel            string `envconfig:"LOG_LEVEL"`
-	// PgURL               string `envconfig:"PG_URL"`
-	// PgMigrationsPath    string `envconfig:"PG_MIGRATIONS_PATH"`
 
-	// HTTPAddr string `envconfig:"HTTP_ADDR"`
-	// GCBucket            string `envconfig:"GC_BUCKET"`
-	// FilePath string `envconfig:"FILE_PATH"`
+	HTTPAddr string `envconfig:"HTTP_ADDR"`
+	LogPath  string `envconfig:"LOG_FILE_PATH"`
 
-	AppPort string `envconfig:"HTTP_ADDR"`
-	LogPath string `envconfig:"LOG_FILE_PATH"`
+	// database settings:
+	DB DBConfig
+}
+
+// DBConfig is config for database
+type DBConfig struct {
+	Username string `envconfig:"DB_USERNAME"`
+	Host     string `envconfig:"DB_HOST"`
+	Port     string `envconfig:"DB_PORT"`
+	DBName   string `envconfig:"DB_NAME"`
+	SSLMode  string `envconfig:"DB_SSL_MODE"`
+	Password string `envconfig:"DB_PASSWORD"`
 }
 
 var (
