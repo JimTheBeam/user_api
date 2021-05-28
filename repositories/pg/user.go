@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"log"
 	"user_api/model"
+
+	_ "github.com/lib/pq"
 )
 
 // UserPgPostgres user
@@ -35,21 +37,23 @@ func (r *UserPgPostgres) CreateUser(name string) (int, error) {
 }
 
 // GetUserById returns user by id from db
-func (r *UserPgPostgres) GetUserById(id int) (model.User, error) {
-	log.Printf("DB: Get user start")
+func (r *UserPgPostgres) GetUserById(id int) (*model.User, error) {
+	log.Printf("DB: Get user start. Id: %d", id)
 	defer log.Printf("DB: Get user end")
 
 	var user model.User
 
 	sql := fmt.Sprintf("SELECT id, name, created_at FROM %s WHERE id = $1", usersTable)
 
+	log.Println(sql)
+
 	err := r.db.QueryRow(sql, id).Scan(&user.ID, &user.Name, &user.CreatedAt)
 	if err != nil {
 		log.Printf("DB: Get query: %v", err)
-		return model.User{}, err
+		return &model.User{}, err
 	}
-
-	return user, nil
+	log.Printf("DB USER GET: %v", user)
+	return &user, nil
 }
 
 // GetAllUsers returns all users from db in order by id
