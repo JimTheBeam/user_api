@@ -8,12 +8,14 @@ import (
 	"time"
 	"user_api/config"
 	"user_api/handler"
+	apiError "user_api/lib/error"
 	"user_api/lib/validator"
 	"user_api/repositories"
 	"user_api/repositories/pg"
 	"user_api/service"
 
 	"github.com/labstack/echo/v4"
+	"github.com/labstack/echo/v4/middleware"
 )
 
 func main() {
@@ -48,9 +50,6 @@ func run() error {
 		log.Fatalf("failed to initialize db: %s", err.Error())
 	}
 
-	// TODO: DELETE:
-	// u := pg.NewUserPostgres(db)
-
 	// Init repository
 	repo := repositories.NewRepository(db)
 
@@ -63,16 +62,23 @@ func run() error {
 	// Initialize Echo instance
 	e := echo.New()
 	e.Validator = validator.NewValidator()
+	e.HTTPErrorHandler = apiError.Error
 
+	// TODO:
 	// Set middleware
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
 
 	// API v1
 	v1 := e.Group("/v1")
 
 	// set routes
 	userRoutes := v1.Group("/user")
-	// userRoutes.POST("/")
+	userRoutes.POST("/", UserHandler.Create)
 	userRoutes.GET("/:id", UserHandler.GetUser)
+	userRoutes.GET("/users", UserHandler.GetAllUsers)
+	userRoutes.GET("/delete/:id", UserHandler.DeleteUser)
+	userRoutes.PUT("/:id", UserHandler.Update)
 
 	// Start server
 	s := &http.Server{

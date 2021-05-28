@@ -9,9 +9,9 @@ import (
 // UserService is a service for users
 type UserService interface {
 	GetUserById(context.Context, int) (*model.User, error)
-	GetAllUsers(context.Context, *model.User) ([]model.User, error)
-	CreateUser(context.Context, *model.User) (*model.User, error)
-	UpdateUser(context.Context, *model.User) error
+	GetAllUsers(context.Context) ([]model.User, error)
+	CreateUser(context.Context, string) (*model.User, error)
+	UpdateUser(context.Context, *model.User) (*model.User, error)
 	DeleteUser(context.Context, int) error
 }
 
