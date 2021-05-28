@@ -27,7 +27,7 @@ func NewUsers(ctx context.Context, service *service.Service) *UserHandler {
 	}
 }
 
-// Create TODO: change func
+// Create creates new user
 func (hnd *UserHandler) Create(ctx echo.Context) error {
 	log.Printf("Create handler starts")
 
@@ -113,7 +113,7 @@ func (hnd *UserHandler) DeleteUser(ctx echo.Context) error {
 
 }
 
-// Update TODO: change func
+// Update updates user in DB
 func (hnd *UserHandler) Update(ctx echo.Context) error {
 	log.Printf("Update handler starts")
 
@@ -124,20 +124,10 @@ func (hnd *UserHandler) Update(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, errors.Wrap(err, "could not create user"))
 	}
 
-	log.Println(reqUser)
-
 	if err := ctx.Validate(&reqUser); err != nil {
 		return echo.NewHTTPError(http.StatusUnprocessableEntity, err)
 	}
-	// if name, ok = json["name"].(string); !ok {
-	// 	return echo.NewHTTPError(http.StatusBadRequest, "could not create user")
-	// }
-
-	// log.Printf("Create handler username: %v", name)
-
-	// if name == "" {
-	// 	echo.NewHTTPError(http.StatusBadRequest, "empty name field")
-	// }
+	log.Printf("Update handler. User: %v", reqUser)
 
 	updatedUser, err := hnd.service.User.UpdateUser(ctx.Request().Context(), &reqUser)
 	if err != nil {

@@ -11,9 +11,6 @@ import (
 
 // Config - config struct
 type Config struct {
-
-	// LogLevel            string `envconfig:"LOG_LEVEL"`
-
 	HTTPAddr string `envconfig:"HTTP_ADDR"`
 	LogPath  string `envconfig:"LOG_FILE_PATH"`
 

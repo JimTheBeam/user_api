@@ -64,7 +64,6 @@ func run() error {
 	e.Validator = validator.NewValidator()
 	e.HTTPErrorHandler = apiError.Error
 
-	// TODO:
 	// Set middleware
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
