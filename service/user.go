@@ -13,14 +13,12 @@ import (
 // UserWebService ...
 type UserWebService struct {
 	repo *repositories.Repository
-	ctx  context.Context
 }
 
 // NewUserWebService creates a new user web service
 func NewUserWebService(ctx context.Context, repo *repositories.Repository) *UserWebService {
 	return &UserWebService{
 		repo: repo,
-		ctx:  ctx,
 	}
 }
 

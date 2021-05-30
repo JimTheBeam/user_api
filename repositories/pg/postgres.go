@@ -25,7 +25,9 @@ func NewPostgresDB() (*sql.DB, error) {
 		cfg.DB.Username,
 		cfg.DB.DBName,
 		cfg.DB.Password,
-		cfg.DB.SSLMode))
+		cfg.DB.SSLMode,
+	),
+	)
 	if err != nil {
 		log.Printf("Database connection: %v", err)
 		return nil, err

@@ -73,10 +73,37 @@ func run() error {
 
 	// set routes
 	userRoutes := v1.Group("/user")
+
+	// Create a new user.
+	// Method - POST
+	// Parameter content type application/json
+	// request json: {"name": "string"}
+	// successful response json: {"id": "integer", name: "string", "created_at": "string"}
 	userRoutes.POST("/", UserHandler.Create)
+
+	// Get a user with id.
+	// Method - GET
+	// Parameter content type application/json
+	// successful response json: {"id": "integer", name: "string", "created_at": "string"}
 	userRoutes.GET("/:id", UserHandler.GetUser)
+
+	// Get all users.
+	// Method - GET
+	// Parameter content type application/json
+	// successful response json: [{"id": "integer", name: "string", "created_at": "string"}, {},...]
 	userRoutes.GET("/users", UserHandler.GetAllUsers)
+
+	// Delete a user with id.
+	// Method - GET
+	// Parameter content type application/json
+	// successful response json: { "code": 200, "name": "OK", "message": "OK"}
 	userRoutes.GET("/delete/:id", UserHandler.DeleteUser)
+
+	// Update a user with id.
+	// Method - PUT
+	// Parameter content type application/json
+	// request json: {"name": "string", id: "integer"}
+	// successful response json: {"id": "integer", name: "string", "created_at": "string"}
 	userRoutes.PUT("/:id", UserHandler.Update)
 
 	// Start server

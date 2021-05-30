@@ -15,14 +15,12 @@ import (
 
 // UserHandler
 type UserHandler struct {
-	ctx     context.Context
 	service *service.Service
 }
 
 // NewUsers creates a new user handler
 func NewUsers(ctx context.Context, service *service.Service) *UserHandler {
 	return &UserHandler{
-		ctx:     ctx,
 		service: service,
 	}
 }
