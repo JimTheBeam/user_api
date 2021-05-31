@@ -94,10 +94,10 @@ func run() error {
 	userRoutes.GET("/users", UserHandler.GetAllUsers)
 
 	// Delete a user with id.
-	// Method - GET
+	// Method - DELETE
 	// Parameter content type application/json
 	// successful response json: { "code": 200, "name": "OK", "message": "OK"}
-	userRoutes.GET("/delete/:id", UserHandler.DeleteUser)
+	userRoutes.DELETE("/:id", UserHandler.DeleteUser)
 
 	// Update a user with id.
 	// Method - PUT

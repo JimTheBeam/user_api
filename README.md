@@ -21,8 +21,8 @@ Url: host/v1/user/users<br>
 Successful response json: [{"id": "integer", name: "string", "created_at": "string"}, {},...]<br>
 
 4. DELETE a user with id<br>
-Method: GET<br>
-Url: host/v1/user/delete/"id"<br>
+Method: DELETE<br>
+Url: host/v1/user/"id"<br>
 Successful response json: { "code": 200, "name": "OK", "message": "OK"}<br>
 
 5. UPDATE a user with id.<br>
@@ -31,8 +31,7 @@ Url: host/v1/user/"id"<br>
 Request json: {"name": "string", id: "integer"}<br>
 Successful response json: {"id": "integer", name: "string", "created_at": "string"}<br>
 
-**Error response json for all methods:**
-
+**Error response json for all methods:**<br>
 json: { "code": 200, "name": "string", "message": "string"}<br>
 
 ## To run the server
