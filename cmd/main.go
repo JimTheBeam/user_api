@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"time"
 	"user_api/config"
 	"user_api/handler"
 	apiError "user_api/lib/error"
@@ -54,10 +53,10 @@ func run() error {
 	repo := repositories.NewRepository(db)
 
 	// Init service
-	userService := service.NewService(ctx, repo)
+	userService := service.NewService(repo)
 
 	// Init handler
-	UserHandler := handler.NewUsers(ctx, userService)
+	userHandler := handler.NewUsers(ctx, userService)
 
 	// Initialize Echo instance
 	e := echo.New()
@@ -79,38 +78,38 @@ func run() error {
 	// Parameter content type application/json
 	// request json: {"name": "string"}
 	// successful response json: {"id": "integer", name: "string", "created_at": "string"}
-	userRoutes.POST("/", UserHandler.Create)
+	userRoutes.POST("/", userHandler.Create)
 
 	// Get a user with id.
 	// Method - GET
 	// Parameter content type application/json
 	// successful response json: {"id": "integer", name: "string", "created_at": "string"}
-	userRoutes.GET("/:id", UserHandler.GetUser)
+	userRoutes.GET("/:id", userHandler.GetUser)
 
 	// Get all users.
 	// Method - GET
 	// Parameter content type application/json
 	// successful response json: [{"id": "integer", name: "string", "created_at": "string"}, {},...]
-	userRoutes.GET("/users", UserHandler.GetAllUsers)
+	userRoutes.GET("/users", userHandler.GetAllUsers)
 
 	// Delete a user with id.
 	// Method - DELETE
 	// Parameter content type application/json
 	// successful response json: { "code": 200, "name": "OK", "message": "OK"}
-	userRoutes.DELETE("/:id", UserHandler.DeleteUser)
+	userRoutes.DELETE("/:id", userHandler.DeleteUser)
 
 	// Update a user with id.
 	// Method - PUT
 	// Parameter content type application/json
 	// request json: {"name": "string", id: "integer"}
 	// successful response json: {"id": "integer", name: "string", "created_at": "string"}
-	userRoutes.PUT("/:id", UserHandler.Update)
+	userRoutes.PUT("/:id", userHandler.Update)
 
 	// Start server
 	s := &http.Server{
 		Addr:         cfg.HTTPAddr,
-		ReadTimeout:  30 * time.Second,
-		WriteTimeout: 30 * time.Second,
+		ReadTimeout:  cfg.ReadTimeout,
+		WriteTimeout: cfg.WriteTimeout,
 	}
 	e.Logger.Fatal(e.StartServer(s))
 

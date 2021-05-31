@@ -1,7 +1,6 @@
 package service
 
 import (
-	"context"
 	"fmt"
 	"user_api/lib/types"
 	"user_api/model"
@@ -16,14 +15,14 @@ type UserWebService struct {
 }
 
 // NewUserWebService creates a new user web service
-func NewUserWebService(ctx context.Context, repo *repositories.Repository) *UserWebService {
+func NewUserWebService(repo *repositories.Repository) *UserWebService {
 	return &UserWebService{
 		repo: repo,
 	}
 }
 
 // GetUserById ...
-func (svc *UserWebService) GetUserById(ctx context.Context, userID int) (*model.User, error) {
+func (svc *UserWebService) GetUserById(userID int) (*model.User, error) {
 	userDB, err := svc.repo.GetUserById(userID)
 	if err != nil {
 		return nil, errors.Wrap(err, "svc.user.GetUser")
@@ -36,7 +35,7 @@ func (svc *UserWebService) GetUserById(ctx context.Context, userID int) (*model.
 }
 
 // GetAllUsers ...
-func (svc *UserWebService) GetAllUsers(ctx context.Context) ([]model.User, error) {
+func (svc *UserWebService) GetAllUsers() ([]model.User, error) {
 	users, err := svc.repo.GetAllUsers()
 	if err != nil {
 		return nil, errors.Wrap(err, "svc.user.GetAllUsers")
@@ -46,7 +45,7 @@ func (svc *UserWebService) GetAllUsers(ctx context.Context) ([]model.User, error
 }
 
 // CreateUser ...
-func (svc *UserWebService) CreateUser(ctx context.Context, name string) (*model.User, error) {
+func (svc *UserWebService) CreateUser(name string) (*model.User, error) {
 	// create a new user
 	createdID, err := svc.repo.CreateUser(name)
 	if err != nil {
@@ -63,7 +62,7 @@ func (svc *UserWebService) CreateUser(ctx context.Context, name string) (*model.
 }
 
 // UpdateUser ...
-func (svc *UserWebService) UpdateUser(ctx context.Context, user *model.User) (*model.User, error) {
+func (svc *UserWebService) UpdateUser(user *model.User) (*model.User, error) {
 	// update user
 	err := svc.repo.UpdateUser(user.ID, user.Name)
 	if err != nil {
@@ -80,7 +79,7 @@ func (svc *UserWebService) UpdateUser(ctx context.Context, user *model.User) (*m
 }
 
 // DeleteUser ...
-func (svc *UserWebService) DeleteUser(ctx context.Context, userID int) error {
+func (svc *UserWebService) DeleteUser(userID int) error {
 	err := svc.repo.DeleteUser(userID)
 	if err != nil {
 		return errors.Wrap(err, "svc.user.DeleteUser")

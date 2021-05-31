@@ -36,9 +36,13 @@ func (hnd *UserHandler) Create(ctx echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, errors.Wrap(err, "could not create user"))
 	}
 
+	if err := ctx.Validate(&jsonUser); err != nil {
+		return echo.NewHTTPError(http.StatusUnprocessableEntity, err)
+	}
+
 	log.Println("Create user struct:", jsonUser)
 
-	createdUser, err := hnd.service.User.CreateUser(ctx.Request().Context(), jsonUser.Name)
+	createdUser, err := hnd.service.User.CreateUser(jsonUser.Name)
 	if err != nil {
 		switch {
 		case errors.Cause(err) == types.ErrBadRequest:
@@ -61,7 +65,7 @@ func (hnd *UserHandler) GetUser(ctx echo.Context) error {
 	log.Printf("Get user handler ID: %v", userID)
 
 	// get user
-	user, err := hnd.service.User.GetUserById(ctx.Request().Context(), userID)
+	user, err := hnd.service.User.GetUserById(userID)
 	if err != nil {
 		switch {
 		case errors.Cause(err) == types.ErrNotFound:
@@ -79,7 +83,7 @@ func (hnd *UserHandler) GetUser(ctx echo.Context) error {
 func (hnd *UserHandler) GetAllUsers(ctx echo.Context) error {
 	log.Printf("Get all users handler")
 
-	users, err := hnd.service.User.GetAllUsers(ctx.Request().Context())
+	users, err := hnd.service.User.GetAllUsers()
 	if err != nil {
 		echo.NewHTTPError(http.StatusInternalServerError, errors.Wrap(err, "could not get all users"))
 	}
@@ -96,7 +100,7 @@ func (hnd *UserHandler) DeleteUser(ctx echo.Context) error {
 	log.Printf("Delete user handler ID: %v", userID)
 
 	// delete user
-	err = hnd.service.User.DeleteUser(ctx.Request().Context(), userID)
+	err = hnd.service.User.DeleteUser(userID)
 	if err != nil {
 		switch {
 		case errors.Cause(err) == types.ErrNotFound:
@@ -127,7 +131,7 @@ func (hnd *UserHandler) Update(ctx echo.Context) error {
 	}
 	log.Printf("Update handler. User: %v", reqUser)
 
-	updatedUser, err := hnd.service.User.UpdateUser(ctx.Request().Context(), &reqUser)
+	updatedUser, err := hnd.service.User.UpdateUser(&reqUser)
 	if err != nil {
 		switch {
 		case errors.Cause(err) == types.ErrBadRequest:

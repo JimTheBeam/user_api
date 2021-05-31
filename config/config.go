@@ -5,20 +5,24 @@ import (
 	"fmt"
 	"log"
 	"sync"
+	"time"
 
 	"github.com/kelseyhightower/envconfig"
 )
 
 // Config - config struct
 type Config struct {
-	HTTPAddr string `envconfig:"HTTP_ADDR"`
-	LogPath  string `envconfig:"LOG_FILE_PATH"`
+	// server settings:
+	HTTPAddr     string        `envconfig:"HTTP_ADDR"`
+	ReadTimeout  time.Duration `envconfig:"READ_TIMEOUT"`
+	WriteTimeout time.Duration `envconfig:"WRITE_TIMEOUT"`
+	LogPath      string        `envconfig:"LOG_FILE_PATH"`
 
 	// database settings:
 	DB DBConfig
 }
 
-// DBConfig is config for database
+// DBConfig is a config for database
 type DBConfig struct {
 	Username string `envconfig:"DB_USERNAME"`
 	Host     string `envconfig:"DB_HOST"`
