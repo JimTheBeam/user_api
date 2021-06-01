@@ -2,7 +2,6 @@ package jsonobject
 
 import (
 	"encoding/json"
-	"fmt"
 	"io/ioutil"
 	"log"
 	"os"
@@ -44,8 +43,7 @@ func openJsonFile() (*[]byte, error) {
 
 	info, err := jsonFile.Stat()
 	if err != nil {
-		fmt.Println("EMPTY FILE!!!!!!!!")
-		fmt.Println(info)
+		log.Printf("json file info: %v", err)
 		return nil, err
 	}
 	// check if file is empty

@@ -1,6 +1,6 @@
 # user_api is a small api that provide work with users
 
-Server can use two different types of storages:
+Server can use two different types of storage:
 
 * postgres database
 * json object file

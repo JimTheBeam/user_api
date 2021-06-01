@@ -39,7 +39,7 @@ func (r *UserJson) CreateUser(name string) (int, error) {
 	newUser := model.User{
 		ID:        id,
 		Name:      name,
-		CreatedAt: time.Now(),
+		CreatedAt: time.Now().Format("2006-01-02T15:04:05"),
 	}
 
 	r.userJS.Users = append(r.userJS.Users, newUser)
