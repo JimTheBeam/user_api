@@ -49,6 +49,12 @@ json: { "code": 400, "name": "string", "message": "string"}<br>
 > path to log file:<br>
 > export LOG_FILE_PATH="./log/log.log"<br>
 >
+> storage settings. Can be only "postgres" or "jsonObj"<br>
+> export STORAGE="jsonObj"<br>
+>
+> jsonObj settings:<br>
+> export JSON_FILE_PATH="users.json"<br>
+>
 > database settings:<br>
 > export DB_USERNAME="postgres"<br>
 > export DB_HOST="localhost"<br>

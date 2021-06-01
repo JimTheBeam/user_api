@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -10,6 +12,7 @@ import (
 	apiError "user_api/lib/error"
 	"user_api/lib/validator"
 	"user_api/repositories"
+	jsonobject "user_api/repositories/jsonObject"
 	"user_api/repositories/pg"
 	"user_api/service"
 
@@ -25,6 +28,9 @@ func main() {
 }
 
 func run() error {
+	var (
+		repo *repositories.Repository
+	)
 	ctx := context.Background()
 
 	// config
@@ -41,16 +47,40 @@ func run() error {
 		defer lf.Close()
 		log.SetOutput(lf)
 	}
+
 	log.Println("app is starting...")
 
-	// Connect to database
-	db, err := pg.NewPostgresDB()
-	if err != nil {
-		log.Fatalf("failed to initialize db: %s", err.Error())
-	}
+	log.Printf("initializing %s storage...", cfg.Storage)
 
-	// Init repository
-	repo := repositories.NewRepository(db)
+	// init repository
+	switch cfg.Storage {
+	case "postgres":
+		// Connect to database
+		db, err := pg.NewPostgresDB()
+		if err != nil {
+			log.Fatalf("failed to initialize db: %s", err.Error())
+		}
+
+		// Init db repository
+		repo = repositories.NewRepositoryDB(db)
+		log.Printf("initialized database repository")
+
+	case "jsonObj":
+		// open json file
+		bytes, err := jsonobject.OpenJsonFile()
+		if err != nil {
+			log.Fatalf("failed to initialize db: %s", err.Error())
+		}
+
+		// Init jsonObj repository
+		repo = repositories.NewRepositoryJson(bytes)
+		log.Printf("initialized jsonObj repository")
+
+	default:
+		err := fmt.Sprintf("incorrect storage: %s", cfg.Storage)
+		fmt.Println(err)
+		return errors.New(err)
+	}
 
 	// Init service
 	userService := service.NewService(repo)

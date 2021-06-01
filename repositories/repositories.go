@@ -3,6 +3,7 @@ package repositories
 import (
 	"database/sql"
 	"user_api/model"
+	jsonobject "user_api/repositories/jsonObject"
 	"user_api/repositories/pg"
 )
 
@@ -19,8 +20,16 @@ type Repository struct {
 	UserRepo
 }
 
-func NewRepository(db *sql.DB) *Repository {
+// NewRepository creates new database repository
+func NewRepositoryDB(db *sql.DB) *Repository {
 	return &Repository{
 		UserRepo: pg.NewUserPostgres(db),
+	}
+}
+
+// NewRepository creates new json repository
+func NewRepositoryJson(bytes *[]byte) *Repository {
+	return &Repository{
+		UserRepo: jsonobject.NewUserJson(bytes),
 	}
 }

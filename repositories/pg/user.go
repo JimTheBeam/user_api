@@ -9,18 +9,18 @@ import (
 	_ "github.com/lib/pq"
 )
 
-// UserPgPostgres user
-type UserPgPostgres struct {
+// UserPostgres user
+type UserPostgres struct {
 	db *sql.DB
 }
 
 // NewUserPostgres create new
-func NewUserPostgres(db *sql.DB) *UserPgPostgres {
-	return &UserPgPostgres{db: db}
+func NewUserPostgres(db *sql.DB) *UserPostgres {
+	return &UserPostgres{db: db}
 }
 
 // CreateUser creates user in Postgres return id
-func (r *UserPgPostgres) CreateUser(name string) (int, error) {
+func (r *UserPostgres) CreateUser(name string) (int, error) {
 	log.Printf("DB: Create user start")
 	defer log.Printf("DB: Create user end")
 
@@ -37,7 +37,7 @@ func (r *UserPgPostgres) CreateUser(name string) (int, error) {
 }
 
 // GetUserById returns user by id from db
-func (r *UserPgPostgres) GetUserById(id int) (*model.User, error) {
+func (r *UserPostgres) GetUserById(id int) (*model.User, error) {
 	log.Printf("DB: Get user start. Id: %d", id)
 	defer log.Printf("DB: Get user end")
 
@@ -57,7 +57,7 @@ func (r *UserPgPostgres) GetUserById(id int) (*model.User, error) {
 }
 
 // GetAllUsers returns all users from db in order by id
-func (r *UserPgPostgres) GetAllUsers() ([]model.User, error) {
+func (r *UserPostgres) GetAllUsers() ([]model.User, error) {
 	log.Printf("DB: Get all users start")
 	defer log.Printf("DB: Get all users end")
 
@@ -87,7 +87,7 @@ func (r *UserPgPostgres) GetAllUsers() ([]model.User, error) {
 }
 
 // UpdateUser updates user by id
-func (r *UserPgPostgres) UpdateUser(id int, name string) error {
+func (r *UserPostgres) UpdateUser(id int, name string) error {
 	log.Printf("DB: Update user start")
 	defer log.Printf("DB: Update user end")
 
@@ -103,7 +103,7 @@ func (r *UserPgPostgres) UpdateUser(id int, name string) error {
 }
 
 // DeleteUser deletes user by id
-func (r *UserPgPostgres) DeleteUser(id int) error {
+func (r *UserPostgres) DeleteUser(id int) error {
 	log.Printf("DB: Delete user start")
 	defer log.Printf("DB: Delete user end")
 

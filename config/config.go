@@ -18,6 +18,12 @@ type Config struct {
 	WriteTimeout time.Duration `envconfig:"WRITE_TIMEOUT"`
 	LogPath      string        `envconfig:"LOG_FILE_PATH"`
 
+	// storage settings:
+	Storage string `envconfig:"STORAGE"`
+
+	// jsonObj settings:
+	JsonPath string `envconfig:"JSON_FILE_PATH"`
+
 	// database settings:
 	DB DBConfig
 }
