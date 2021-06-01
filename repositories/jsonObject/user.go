@@ -1,23 +1,21 @@
 package jsonobject
 
 import (
-	"encoding/json"
-	"io/ioutil"
+	"errors"
+	"fmt"
 	"log"
 	"time"
-	"user_api/config"
 	"user_api/model"
 )
 
-// TODO: избавиться от байтов и перевести в стракт!!!!!!!!
 // UserJson user
 type UserJson struct {
-	bytes *[]byte
+	userJS *model.Users
 }
 
 // NewUserJson creates new json user
-func NewUserJson(bytes *[]byte) *UserJson {
-	return &UserJson{bytes: bytes}
+func NewUserJson(users *model.Users) *UserJson {
+	return &UserJson{userJS: users}
 }
 
 // CreateUser creates a user, return id
@@ -25,25 +23,17 @@ func (r *UserJson) CreateUser(name string) (int, error) {
 	log.Printf("json: Create user start")
 	defer log.Printf("json: Create user end")
 
-	var (
-		id    int
-		users model.Users
-		err   error
-	)
-
-	// unmarshal bytes to struct
-	if err := json.Unmarshal(*r.bytes, &users); err != nil {
-		log.Printf("CreateUser: unmarshal bytes: %v", err)
-		return id, err
-	}
+	id := 1
 
 	// check user name
-	if err := checkUserName(name, users); err != nil {
+	if err := checkUserName(name, r.userJS); err != nil {
 		return 0, err
 	}
 
 	// get new id
-	id = users.Users[len(users.Users)-1].ID + 1
+	if len(r.userJS.Users) > 0 {
+		id = r.userJS.Users[len(r.userJS.Users)-1].ID + 1
+	}
 
 	// create a new user
 	newUser := model.User{
@@ -52,17 +42,10 @@ func (r *UserJson) CreateUser(name string) (int, error) {
 		CreatedAt: time.Now(),
 	}
 
-	users.Users = append(users.Users, newUser)
+	r.userJS.Users = append(r.userJS.Users, newUser)
 
-	*r.bytes, err = json.Marshal(users)
-	if err != nil {
-		log.Printf("CreateUser: marshal bytes: %v", err)
-		return 0, err
-	}
-
-	// write users to a file
-	if err := ioutil.WriteFile(config.Get().JsonPath, *r.bytes, 0660); err != nil {
-		log.Printf("CreateUser: write file: %v", err)
+	if err := writeJsonFile(r.userJS); err != nil {
+		log.Printf("CreateUser write file: %v", err)
 		return 0, err
 	}
 
@@ -75,21 +58,24 @@ func (r *UserJson) GetUserById(id int) (*model.User, error) {
 	defer log.Printf("json: Get user end")
 
 	var (
-		users   model.Users
 		reqUser model.User
+		exist   bool
 	)
-	// unmarshal bytes to struct
-	if err := json.Unmarshal(*r.bytes, &users); err != nil {
-		log.Printf("GetUserById: unmarshal bytes: %v", err)
-		return &model.User{}, err
-	}
 
 	// find user in users by id
-	for i := 0; i < len(users.Users); i++ {
-		if users.Users[i].ID == id {
-			reqUser = users.Users[i]
+	for i := 0; i < len(r.userJS.Users); i++ {
+		if r.userJS.Users[i].ID == id {
+			reqUser = r.userJS.Users[i]
+			exist = true
 			break
 		}
+	}
+
+	// check if id exists
+	if !exist {
+		errString := fmt.Sprintf("user with id=%v not found", id)
+		log.Printf(errString)
+		return &model.User{}, errors.New(errString)
 	}
 
 	return &reqUser, nil
@@ -100,15 +86,7 @@ func (r *UserJson) GetAllUsers() ([]model.User, error) {
 	log.Printf("json: Get all users start")
 	defer log.Printf("json: Get all users end")
 
-	var users model.Users
-
-	// unmarshal bytes to struct
-	if err := json.Unmarshal(*r.bytes, &users); err != nil {
-		log.Printf("GetAllUsers: unmarshal bytes: %v", err)
-		return []model.User{}, err
-	}
-
-	return users.Users, nil
+	return r.userJS.Users, nil
 }
 
 // UpdateUser updates user by id
@@ -117,44 +95,36 @@ func (r *UserJson) UpdateUser(id int, newName string) error {
 	defer log.Printf("json: Update user end")
 
 	var (
-		users        model.Users
 		reqUserIndex int
+		exist        bool
 	)
 
-	// unmarshal bytes to struct
-	if err := json.Unmarshal(*r.bytes, &users); err != nil {
-		log.Printf("UpdateUser: unmarshal bytes: %v", err)
-		return err
-	}
-
 	// check if name is unique
-	if err := checkUserName(newName, users); err != nil {
+	if err := checkUserName(newName, r.userJS); err != nil {
 		log.Printf("UpdateUser: incorrect user name: %v", err)
 		return err
 	}
 
-	// TODO: проверка на то что индекс найден иначе будет менять 0 юзера
 	// find a req user index by id
-	for i := 0; i < len(users.Users); i++ {
-		if users.Users[i].ID == id {
+	for i := 0; i < len(r.userJS.Users); i++ {
+		if r.userJS.Users[i].ID == id {
 			reqUserIndex = i
+			exist = true
 			break
 		}
 	}
 
-	users.Users[reqUserIndex].Name = newName
-
-	var err error
-
-	*r.bytes, err = json.Marshal(users)
-	if err != nil {
-		log.Printf("UpdateUser: marshal bytes: %v", err)
-		return err
+	// check if user exists
+	if !exist {
+		errString := fmt.Sprintf("user with id=%v not found", id)
+		log.Printf(errString)
+		return errors.New(errString)
 	}
 
-	// write users to a file
-	if err := ioutil.WriteFile(config.Get().JsonPath, *r.bytes, 0660); err != nil {
-		log.Printf("UpdateUser: write file: %v", err)
+	r.userJS.Users[reqUserIndex].Name = newName
+
+	if err := writeJsonFile(r.userJS); err != nil {
+		log.Printf("UpdateUser write file: %v", err)
 		return err
 	}
 
@@ -167,38 +137,31 @@ func (r *UserJson) DeleteUser(id int) error {
 	defer log.Printf("json: Delete user end")
 
 	var (
-		users        model.Users
 		reqUserIndex int
-		err          error
+		exist        bool
 	)
 
-	// unmarshal bytes to struct
-	if err := json.Unmarshal(*r.bytes, &users); err != nil {
-		log.Printf("DeleteUser: unmarshal bytes: %v", err)
-		return err
-	}
-
-	// TODO: проверка на то что индекс найден иначе будет менять 0 юзера
 	// find req user index by id
-	for i := 0; i < len(users.Users); i++ {
-		if users.Users[i].ID == id {
+	for i := 0; i < len(r.userJS.Users); i++ {
+		if r.userJS.Users[i].ID == id {
 			reqUserIndex = i
+			exist = true
 			break
 		}
 	}
 
-	// delete user
-	users.Users = append(users.Users[:reqUserIndex], users.Users[reqUserIndex+1:]...)
-
-	*r.bytes, err = json.Marshal(users)
-	if err != nil {
-		log.Printf("DeleteUser: marshal bytes: %v", err)
-		return err
+	// check if user exists
+	if !exist {
+		errString := fmt.Sprintf("user with id=%v not found", id)
+		log.Printf(errString)
+		return errors.New(errString)
 	}
 
-	// write users to a file
-	if err := ioutil.WriteFile(config.Get().JsonPath, *r.bytes, 0660); err != nil {
-		log.Printf("DeleteUser: write file: %v", err)
+	// delete user
+	r.userJS.Users = append(r.userJS.Users[:reqUserIndex], r.userJS.Users[reqUserIndex+1:]...)
+
+	if err := writeJsonFile(r.userJS); err != nil {
+		log.Printf("DeleteUser write file: %v", err)
 		return err
 	}
 

@@ -1,5 +1,12 @@
 # user_api is a small api that provide work with users
 
+Server can use two different types of storages:
+
+* postgres database
+* json object file
+
+You can choose one of them in the config file.
+
 ## Methods
 
 Parameter content type: application/json
@@ -9,7 +16,6 @@ Method: POST<br>
 Path: /v1/user/<br>
 Request json: {"name": "string"}<br>
 Successful response json: {"id": integer, "name": "string", "created_at": "string"}<br>
-id - new user id; name - user name; created_at - created time, format: "yyyy-mm-ddThh:mm:ss"
 
 2. GET a USER with ID.<br>"
 Method: GET<br>
@@ -34,6 +40,11 @@ Successful response json: {"id": integer, "name": "string", "created_at": "strin
 
 **Error response json for all methods:**<br>
 json: { "code": 400, "name": "string", "message": "string"}<br>
+
+**Json fields:**<br>
+id - user id; <br>
+name - user name; <br>
+created_at - created time, format: "yyyy-mm-ddThh:mm:ss";<br>
 
 ## To run the server
 

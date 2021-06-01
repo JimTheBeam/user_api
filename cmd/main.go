@@ -67,13 +67,13 @@ func run() error {
 
 	case "jsonObj":
 		// open json file
-		bytes, err := jsonobject.OpenJsonFile()
+		users, err := jsonobject.JsonFile()
 		if err != nil {
-			log.Fatalf("failed to initialize db: %s", err.Error())
+			log.Fatalf("failed to open json file: %s", err.Error())
 		}
 
 		// Init jsonObj repository
-		repo = repositories.NewRepositoryJson(bytes)
+		repo = repositories.NewRepositoryJson(users)
 		log.Printf("initialized jsonObj repository")
 
 	default:

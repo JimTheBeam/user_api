@@ -28,8 +28,8 @@ func NewRepositoryDB(db *sql.DB) *Repository {
 }
 
 // NewRepository creates new json repository
-func NewRepositoryJson(bytes *[]byte) *Repository {
+func NewRepositoryJson(js *model.Users) *Repository {
 	return &Repository{
-		UserRepo: jsonobject.NewUserJson(bytes),
+		UserRepo: jsonobject.NewUserJson(js),
 	}
 }
